@@ -123,8 +123,11 @@ Common Use Cases for Hashing in Data Warehousing:
 - **Indexing:** Create hash indexes to accelerate lookup operations for large datasets, especially in distributed or parallel processing environments.
 
 ```sql
+-- Ensure pgcrypto extension is available
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- Calculate hash value for a given string
-SELECT ENCODE(DIGEST('OpenAI', 'SHA256'), 'hex') AS HashValue;
+SELECT ENCODE(DIGEST('OpenAI', 'sha256'), 'hex') AS HashValue;
 ```
 
 When implementing hashing in SQL, choose a hash algorithm suitable for the specific use case and ensure proper handling of collisions to maintain data integrity.
