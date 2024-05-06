@@ -36,7 +36,8 @@ Types of Indexes:
 - **B-tree Index:** Suitable for range queries and equality searches.
 - **Bitmap Index:** Efficient for columns with low cardinality and frequently used in data warehousing for analytical queries.
 - **Hash Index:** Ideal for equality searches but not suitable for range queries.
-- ```sql
+
+```sql
 -- Create an index on the DepartmentID column of the Employees table
 CREATE INDEX idx_DepartmentID ON Employees (DepartmentID);
 
