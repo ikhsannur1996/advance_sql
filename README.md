@@ -1,1 +1,129 @@
-# advance_sql
+# Advanced SQL for Data Warehousing
+
+In data warehousing, advanced SQL techniques play a crucial role in optimizing performance, managing data integrity, and facilitating complex analytics. This document explores several advanced SQL concepts tailored for data warehouse environments.
+
+## 1. Assign Primary Key and Foreign Key
+
+**Primary Key (PK):** A primary key uniquely identifies each record in a table. It ensures data integrity by preventing duplicate or null values in the specified column(s). When designing a data warehouse, carefully select primary keys based on unique identifiers in the source data.
+
+**Foreign Key (FK):** A foreign key establishes a relationship between two tables by referencing the primary key of another table. This maintains data consistency and enables referential integrity across the data warehouse. When implementing foreign keys, ensure that the referenced columns are indexed for optimal performance.
+
+```sql
+-- Create a table with a primary key
+CREATE TABLE Employees (
+    EmployeeID SERIAL PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    DepartmentID INT
+);
+
+-- Create a table with a foreign key constraint
+CREATE TABLE Departments (
+    DepartmentID SERIAL PRIMARY KEY,
+    DepartmentName VARCHAR(50)
+);
+
+ALTER TABLE Employees
+ADD CONSTRAINT FK_DepartmentID FOREIGN KEY (DepartmentID)
+REFERENCES Departments(DepartmentID);
+```
+
+## 2. Indexing
+
+Indexing is essential for improving query performance, especially in large data warehouses. By creating indexes on columns frequently used in join conditions, WHERE clauses, or ORDER BY clauses, database engines can quickly locate and retrieve the relevant data.
+
+Types of Indexes:
+- **B-tree Index:** Suitable for range queries and equality searches.
+- **Bitmap Index:** Efficient for columns with low cardinality and frequently used in data warehousing for analytical queries.
+- **Hash Index:** Ideal for equality searches but not suitable for range queries.
+- ```sql
+-- Create an index on the DepartmentID column of the Employees table
+CREATE INDEX idx_DepartmentID ON Employees (DepartmentID);
+
+-- Query using the indexed column
+SELECT * 
+FROM Employees 
+WHERE DepartmentID = 100;
+```
+
+Regularly analyze query execution plans and consider creating or adjusting indexes to optimize performance without over-indexing, which can impact write performance.
+
+## 3. Stored Procedures
+
+Stored procedures are precompiled SQL statements stored in the database for reuse. They enhance productivity, maintainability, and security by encapsulating complex logic within the database.
+
+Benefits of Stored Procedures:
+- **Improved Performance:** Stored procedures reduce network traffic by executing multiple SQL statements in a single call.
+- **Security:** Access to data can be controlled through stored procedures, limiting direct table access.
+- **Encapsulation:** Business logic resides in the database, promoting consistency and reducing code duplication.
+- **Ease of Maintenance:** Changes to logic can be made centrally in the stored procedure, without requiring updates to application code.
+```sql
+-- Create a function to retrieve employee information for a given department
+CREATE OR REPLACE FUNCTION GetEmployeesByDepartment(
+    dept_id INT
+)
+RETURNS TABLE(
+    EmployeeID INT,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    DepartmentID INT
+)
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT * 
+    FROM Employees 
+    WHERE DepartmentID = dept_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Call the function
+SELECT * FROM GetEmployeesByDepartment(100);
+```
+
+
+When designing stored procedures, prioritize parameterization, error handling, and transaction management to ensure robustness and reliability.
+
+## 4. Regular Expressions (Regex)
+
+Regular expressions provide powerful pattern matching capabilities, allowing flexible and precise data extraction and manipulation within SQL queries.
+
+Common Use Cases for Regex in Data Warehousing:
+- **Data Cleansing:** Identify and standardize variations in data formats (e.g., dates, phone numbers, emails).
+- **Pattern Matching:** Extract relevant information from unstructured or semi-structured data.
+- **Data Validation:** Validate input data against predefined patterns or constraints.
+  
+```sql
+-- Sample data
+CREATE TABLE Orders (
+    OrderID SERIAL PRIMARY KEY,
+    OrderDate VARCHAR(20)
+);
+
+-- Insert sample data
+INSERT INTO Orders (OrderDate)
+VALUES ('2024-05-06'), ('05/06/2024'), ('06-May-24');
+
+-- Query using regex to extract dates in 'YYYY-MM-DD' format
+SELECT OrderID, OrderDate
+FROM Orders
+WHERE OrderDate ~ '^\d{4}-\d{2}-\d{2}$';
+```
+
+While regex can be a valuable tool, use it judiciously due to potential performance implications, especially when processing large datasets.
+
+## 5. Hashing
+
+Hashing functions in SQL are used to convert data of arbitrary size into a fixed-size value, typically for data encryption, data integrity checks, or indexing purposes.
+
+Common Use Cases for Hashing in Data Warehousing:
+- **Data Encryption:** Secure sensitive data by hashing passwords or other confidential information before storage.
+- **Data Integrity:** Calculate hash values to detect changes or corruption in large datasets during storage or transmission.
+- **Indexing:** Create hash indexes to accelerate lookup operations for large datasets, especially in distributed or parallel processing environments.
+
+```sql
+-- Calculate hash value for a given string
+SELECT ENCODE(DIGEST('OpenAI', 'SHA256'), 'hex') AS HashValue;
+```
+
+When implementing hashing in SQL, choose a hash algorithm suitable for the specific use case and ensure proper handling of collisions to maintain data integrity.
