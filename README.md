@@ -2,7 +2,28 @@
 
 In data warehousing, advanced SQL techniques play a crucial role in optimizing performance, managing data integrity, and facilitating complex analytics. This document explores several advanced SQL concepts tailored for data warehouse environments.
 
-## 1. Implementing Functions
+## 1. Indexing
+
+Indexing is essential for improving query performance, especially in large data warehouses. By creating indexes on columns frequently used in join conditions, WHERE clauses, or ORDER BY clauses, database engines can quickly locate and retrieve the relevant data.
+
+Types of Indexes:
+- **B-tree Index:** Suitable for range queries and equality searches.
+- **Bitmap Index:** Efficient for columns with low cardinality and frequently used in data warehousing for analytical queries.
+- **Hash Index:** Ideal for equality searches but not suitable for range queries.
+
+```sql
+-- Create an index on the DepartmentID column of the Employees table
+CREATE INDEX idx_DepartmentID ON Employees (DepartmentID);
+
+-- Query using the indexed column
+SELECT * 
+FROM Employees 
+WHERE DepartmentID = 100;
+```
+
+Regularly analyze query execution plans and consider creating or adjusting indexes to optimize performance without over-indexing, which can impact write performance.
+
+## 2. Implementing Functions
 
 In data warehousing, implementing custom functions in SQL can streamline complex operations, enhance data processing capabilities, and improve code organization. Functions encapsulate reusable logic within the database, promoting code reusability, readability, and maintainability.
 
@@ -68,29 +89,6 @@ SELECT ExtractNumbersFromString('abc123xyz456') AS ExtractedNumbers;
 -- Call the function to extract a string from a number
 SELECT ExtractStringFromNumber(123456) AS ExtractedString;
 ```
-
-```
-
-## 2. Indexing
-
-Indexing is essential for improving query performance, especially in large data warehouses. By creating indexes on columns frequently used in join conditions, WHERE clauses, or ORDER BY clauses, database engines can quickly locate and retrieve the relevant data.
-
-Types of Indexes:
-- **B-tree Index:** Suitable for range queries and equality searches.
-- **Bitmap Index:** Efficient for columns with low cardinality and frequently used in data warehousing for analytical queries.
-- **Hash Index:** Ideal for equality searches but not suitable for range queries.
-
-```sql
--- Create an index on the DepartmentID column of the Employees table
-CREATE INDEX idx_DepartmentID ON Employees (DepartmentID);
-
--- Query using the indexed column
-SELECT * 
-FROM Employees 
-WHERE DepartmentID = 100;
-```
-
-Regularly analyze query execution plans and consider creating or adjusting indexes to optimize performance without over-indexing, which can impact write performance.
 
 ## 3. Stored Procedures
 
