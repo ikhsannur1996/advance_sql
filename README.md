@@ -2,30 +2,73 @@
 
 In data warehousing, advanced SQL techniques play a crucial role in optimizing performance, managing data integrity, and facilitating complex analytics. This document explores several advanced SQL concepts tailored for data warehouse environments.
 
-## 1. Assign Primary Key and Foreign Key
+## 1. Implementing Functions
 
-**Primary Key (PK):** A primary key uniquely identifies each record in a table. It ensures data integrity by preventing duplicate or null values in the specified column(s). When designing a data warehouse, carefully select primary keys based on unique identifiers in the source data.
+In data warehousing, implementing custom functions in SQL can streamline complex operations, enhance data processing capabilities, and improve code organization. Functions encapsulate reusable logic within the database, promoting code reusability, readability, and maintainability.
 
-**Foreign Key (FK):** A foreign key establishes a relationship between two tables by referencing the primary key of another table. This maintains data consistency and enables referential integrity across the data warehouse. When implementing foreign keys, ensure that the referenced columns are indexed for optimal performance.
+### Types of Functions:
+
+- **Scalar Functions:** Return a single value based on input parameters. Useful for performing calculations or data transformations on individual rows.
+
+- **Table-Valued Functions:** Return a set of rows as a result set. These functions can be used in the FROM clause of a SQL query, enabling complex data manipulations and transformations.
+
+- **Aggregate Functions:** Operate on a set of values and return a single aggregated value. Common aggregate functions include SUM, AVG, COUNT, MAX, and MIN.
+
+### Function to Extract Numbers from a String:
 
 ```sql
--- Create a table with a primary key
-CREATE TABLE Employees (
-    EmployeeID SERIAL PRIMARY KEY,
-    FirstName VARCHAR(50),
-    LastName VARCHAR(50),
-    DepartmentID INT
-);
+CREATE OR REPLACE FUNCTION ExtractNumbersFromString(input_string VARCHAR)
+RETURNS VARCHAR AS $$
+DECLARE
+    result_string VARCHAR := '';
+    i INT := 1;
+BEGIN
+    WHILE i <= LENGTH(input_string) LOOP
+        -- Check if the character at position i is a digit
+        IF SUBSTRING(input_string FROM i FOR 1) ~ '[0-9]' THEN
+            -- Append the digit to the result string
+            result_string := result_string || SUBSTRING(input_string FROM i FOR 1);
+        END IF;
+        i := i + 1;
+    END LOOP;
 
--- Create a table with a foreign key constraint
-CREATE TABLE Departments (
-    DepartmentID SERIAL PRIMARY KEY,
-    DepartmentName VARCHAR(50)
-);
+    RETURN result_string;
+END;
+$$ LANGUAGE plpgsql;
+```
 
-ALTER TABLE Employees
-ADD CONSTRAINT FK_DepartmentID FOREIGN KEY (DepartmentID)
-REFERENCES Departments(DepartmentID);
+### Function to Extract Strings from a Number:
+
+```sql
+CREATE OR REPLACE FUNCTION ExtractStringFromNumber(input_number INT)
+RETURNS VARCHAR AS $$
+DECLARE
+    input_str VARCHAR := input_number::TEXT;
+    extracted_str VARCHAR := '';
+BEGIN
+    -- Check if the number matches the expected pattern
+    IF LENGTH(input_str) >= 3 THEN
+        -- Extract the first three digits as the string
+        extracted_str := SUBSTRING(input_str FROM 1 FOR 3);
+    ELSE
+        RAISE EXCEPTION 'Number does not contain enough digits to extract a string.';
+    END IF;
+
+    RETURN extracted_str;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+Now, you can use these functions as needed:
+
+```sql
+-- Call the function to extract numbers from a string
+SELECT ExtractNumbersFromString('abc123xyz456') AS ExtractedNumbers;
+
+-- Call the function to extract a string from a number
+SELECT ExtractStringFromNumber(123456) AS ExtractedString;
+```
+
 ```
 
 ## 2. Indexing
@@ -129,5 +172,3 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 -- Calculate hash value for a given string
 SELECT ENCODE(DIGEST('OpenAI', 'sha256'), 'hex') AS HashValue;
 ```
-
-When implementing hashing in SQL, choose a hash algorithm suitable for the specific use case and ensure proper handling of collisions to maintain data integrity.
