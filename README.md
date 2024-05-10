@@ -172,3 +172,35 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 -- Calculate hash value for a given string
 SELECT ENCODE(DIGEST('OpenAI', 'sha256'), 'hex') AS HashValue;
 ```
+
+
+## 6. Encryption
+
+Encryption is the process of converting data into a ciphertext that cannot be easily understood by unauthorized users. In SQL, encryption functions are commonly used to secure sensitive information stored in databases.
+
+### Use Cases for Encryption
+
+1. **Data Protection**: Secure sensitive data such as passwords or personally identifiable information (PII) before storing it in the database.
+2. **Compliance**: Ensure compliance with data protection regulations by encrypting sensitive data at rest.
+3. **Confidentiality**: Safeguard confidential information from unauthorized access, both in storage and during transmission.
+
+### Example: Encrypting Data in PostgreSQL
+
+```
+-- Create table
+CREATE TABLE encrypted_data (
+    id SERIAL PRIMARY KEY,
+    encrypted_column BYTEA
+);
+
+-- Insert encrypted data
+INSERT INTO encrypted_data (encrypted_column) 
+VALUES (pgp_sym_encrypt('Sensitive information', 'encryption_key'));
+
+-- Select encrypted data
+SELECT id, encrypted_column FROM encrypted_data;
+
+-- Decrypt data while selecting
+SELECT id, pgp_sym_decrypt_bytea(encrypted_column, 'encryption_key') AS decrypted_data FROM encrypted_data;
+```
+
