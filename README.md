@@ -37,7 +37,7 @@ VALUES
 -- Check the indexed table
 SELECT *
 FROM pg_indexes
-WHERE tablename = 'Employees';
+WHERE tablename = 'employees' AND schemaname = 'public';
 
 -- Query using the indexed columns
 SELECT * 
