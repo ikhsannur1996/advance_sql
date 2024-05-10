@@ -12,10 +12,28 @@ Types of Indexes:
 - **Hash Index:** Ideal for equality searches but not suitable for range queries.
 
 ```sql
--- Create an index on the DepartmentID column of the Employees table
-CREATE INDEX idx_DepartmentID ON Employees (DepartmentID);
+-- Create the Employees table
+CREATE TABLE Employees (
+    EmployeeID SERIAL PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    DepartmentID INT,
+    Salary NUMERIC(10, 2)
+);
 
--- Query using the indexed column
+-- Create an index on DepartmentID and LastName columns
+CREATE INDEX idx_DepartmentID_LastName ON Employees (DepartmentID, LastName);
+
+-- Insert sample data into the Employees table
+INSERT INTO Employees (FirstName, LastName, DepartmentID, Salary) 
+VALUES 
+    ('John', 'Doe', 100, 50000.00),
+    ('Jane', 'Smith', 200, 60000.00),
+    ('Michael', 'Johnson', 100, 55000.00),
+    ('Emily', 'Brown', 200, 65000.00),
+    ('David', 'Davis', 100, 52000.00);
+
+-- Query using the indexed columns
 SELECT * 
 FROM Employees 
 WHERE DepartmentID = 100;
