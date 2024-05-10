@@ -195,12 +195,13 @@ CREATE TABLE encrypted_data (
 
 -- Insert encrypted data
 INSERT INTO encrypted_data (encrypted_column) 
-VALUES (pgp_sym_encrypt('Sensitive information', 'encryption_key'));
+VALUES (pgp_sym_encrypt('Mohamad Ikhsan Nurulloh', '123'));
 
 -- Select encrypted data
-SELECT id, encrypted_column FROM encrypted_data;
+SELECT id, encode(encrypted_column, 'hex') AS encrypted_data_hex FROM encrypted_data;
 
 -- Decrypt data while selecting
-SELECT id, pgp_sym_decrypt_bytea(encrypted_column, 'encryption_key') AS decrypted_data FROM encrypted_data;
+SELECT id, convert_from(pgp_sym_decrypt_bytea(encrypted_column, '123'), 'UTF-8') AS decrypted_data FROM encrypted_data;
+
 ```
 
