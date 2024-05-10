@@ -33,6 +33,12 @@ VALUES
     ('Emily', 'Brown', 200, 65000.00),
     ('David', 'Davis', 100, 52000.00);
 
+
+-- Check the indexed table
+SELECT *
+FROM pg_indexes
+WHERE tablename = 'Employees';
+
 -- Query using the indexed columns
 SELECT * 
 FROM Employees 
