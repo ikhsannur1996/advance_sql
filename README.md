@@ -130,6 +130,8 @@ When designing stored procedures, prioritize parameterization, error handling, a
 
 Regular expressions provide powerful pattern matching capabilities, allowing flexible and precise data extraction and manipulation within SQL queries.
 
+https://www.postgresql.org/docs/current/functions-matching.html
+
 Common Use Cases for Regex in Data Warehousing:
 - **Data Cleansing:** Identify and standardize variations in data formats (e.g., dates, phone numbers, emails).
 - **Pattern Matching:** Extract relevant information from unstructured or semi-structured data.
